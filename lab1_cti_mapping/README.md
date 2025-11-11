@@ -27,4 +27,4 @@ through anomaly and entropy analysis.
 - `sources.bib` — citations  
 - `assets/screenshot.png` — image used for mapping  
 
-**Group members:** Daniel Buts
+**Group members:** Daniel Buts, Daniel Ziv
