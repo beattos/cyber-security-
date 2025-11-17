@@ -9,7 +9,7 @@ Each lab includes a real-world Cyber Threat Intelligence (CTI) report mapped to 
 
 | Lab | Title | Folder | Description |
 |-----|--------|---------|-------------|
-| 1 | Cyber Threat Intelligence – Mapping to Tactics & Techniques | [lab1_cti_mapping/](lab1_cti_mapping/) | Microsoft “AI vs AI” phishing campaign mapped to MITRE ATT&CK techniques |
+| 1 | Cyber Threat Intelligence – Mapping to Tactics & Techniques | [lab1_cti_mapping/](lab01-cti-mapping/) | Microsoft “AI vs AI” phishing campaign mapped to MITRE ATT&CK techniques |
 | 2 | (Coming soon) | (To be added) | |
 | 3 | (Coming soon) | (To be added) | |
 
