@@ -18,6 +18,8 @@ Each lab includes a real-world Cyber Threat Intelligence (CTI) report mapped to 
 
 ---
 
+<p align="center"> <img src="https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python"> <img src="https://img.shields.io/badge/Jupyter-Notebooks-orange?style=for-the-badge&logo=jupyter"> <img src="https://img.shields.io/badge/Scikit--Learn-ML-yellow?style=for-the-badge&logo=scikit-learn"> <img src="https://img.shields.io/badge/MITRE-ATT%26CK-critical?style=for-the-badge"> <img src="https://img.shields.io/badge/Datasets-Real%20Traffic-green?style=for-the-badge"> </p>
+
 ## 🚀 Final Project
 The final course project will be added later under **`/final_project/`**.
 
