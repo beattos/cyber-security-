@@ -1,4 +1,4 @@
-# 🛡️ Cyber Security Course Repository
+<h1 align="center">🛡️ Cyber Security Course Repository</h1> <p align="center"> Hands-on Labs • Machine Learning • MITRE ATT&CK • Real-world datasets </p> <p align="center"> <img src="https://img.shields.io/badge/Cyber%20Security-Student%20Portfolio-blueviolet?style=for-the-badge"> <img src="https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge"> <img src="https://img.shields.io/badge/MITRE%20ATT%26CK-Mapping-red?style=for-the-badge"> <img src="https://img.shields.io/badge/AI%2FML-Anomaly%20Detection-orange?style=for-the-badge"> </p>
 
 This repository contains all lab work and the final project for the **Cyber Security** course.  
 Each lab includes a real-world Cyber Threat Intelligence (CTI) report mapped to **MITRE ATT&CK** tactics and techniques.
