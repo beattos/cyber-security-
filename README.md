@@ -89,6 +89,19 @@ The system assists a SOC analyst by:
 
 ---
 
+## 🚀 Course Learning Outcomes
+- Cyber Threat Intelligence analysis  
+- MITRE ATT&CK mapping  
+- Network anomaly detection  
+- Malware static & dynamic analysis  
+- AI-assisted SOC workflows  
+- Secure and explainable LLM agents  
+
+---
+
+📌 *This repository is both a course submission and a professional security portfolio.*
+
+
 ## 📂 Repository Structure
 
 ```text
@@ -106,16 +119,3 @@ cyber-security-/
 └── README.md
 
 
----
-
-## 🚀 Course Learning Outcomes
-- Cyber Threat Intelligence analysis  
-- MITRE ATT&CK mapping  
-- Network anomaly detection  
-- Malware static & dynamic analysis  
-- AI-assisted SOC workflows  
-- Secure and explainable LLM agents  
-
----
-
-📌 *This repository is both a course submission and a professional security portfolio.*
