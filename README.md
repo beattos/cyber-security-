@@ -24,36 +24,14 @@ The repository is structured as a **progressive learning path**, starting from C
 # 🧪 Labs Index
 
 | Lab | Title | Folder | Description |
-|----|------|--------|-------------|
-| **1** | 🧩 Cyber Threat Intelligence – MITRE ATT&CK Mapping | [lab01-cti-mapping](lab01-cti-mapping/) | CTI report analyzing a real phishing campaign and mapping adversary behavior to ATT&CK |
-| **2** | 🚨 Network Anomaly Detection (Isolation Forest) | [lab02-anomaly-detection](lab02-anomaly-detection/) | ML-based detection of anomalous network traffic using CICIDS dataset |
-| **3** | 🔍 (Reserved) | — | Reserved for advanced detection / analysis lab |
-| **4** | 🤖 LLM Agents & Tool Usage (Exploratory Analysis) | [lab04-exploratory-analysis](lab04-exploratory-analysis/) | Introduction to LLM-based agents, tool calling, and Dockerized agent environments |
+|-----|------|--------|-------------|
+| **1** | 🧩 Cyber Threat Intelligence – MITRE ATT&CK Mapping | [lab01-cti-mapping](lab01-cti-mapping/) | CTI report on Microsoft “AI vs AI” phishing campaign |
+| **2** | 🚨 Network Anomaly Detection (IsolationForest) | [lab02-anomaly-detection](lab02-anomaly-detection/) | CICIDS2017 anomaly detection mapped to ATT&CK T1041 |
+| **3** | 🔍 (Coming soon) | (To be added) | To be added |
+| **4** | 🤖 LLM Agents & Tool Usage | [lab04-exploratory-analysis](lab04-exploratory-analysis/) | Building and interacting with LLM-based agents using tools |
+| **5** | 🔍 (Coming soon) | (To be added) | To be added |
+| **Final Project** | 🧠 Static vs Dynamic Malware Analysis | (To be added) | AI-assisted malware analysis using static and dynamic techniques |
 
----
-
-## 🧪 Lab 4 – LLM Agents & Tool Usage
-
-**Focus:**  
-Agent mechanics, tool invocation, and controlled interaction with structured data and logs.
-
-**Key components:**
-- Docker-based development environment
-- Agent Framework DevUI
-- Multiple agents:
-  - `hello_world_agent`
-  - `dataset_eda_agent`
-  - `log_explainer_agent`
-- Deterministic Python tools exposed to LLMs
-- Real-time inspection via Dev UI (events, traces, tools)
-
-**Concepts covered:**
-- Difference between chatbots and agents
-- Tool calling and function execution
-- Structured output generation
-- Safe and explainable AI workflows
-
-> This lab serves as the **technical foundation** for the final project.
 
 ---
 
@@ -112,7 +90,6 @@ The system assists a SOC analyst by:
 ---
 
 ## 📂 Repository Structure
-
 
 cyber-security-/
 │
