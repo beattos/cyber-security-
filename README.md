@@ -91,8 +91,8 @@ The system assists a SOC analyst by:
 
 ## 📂 Repository Structure
 
+```text
 cyber-security-/
-│
 ├── lab01-cti-mapping/
 ├── lab02-anomaly-detection/
 ├── lab04-exploratory-analysis/
@@ -101,10 +101,10 @@ cyber-security-/
 │       ├── dataset_eda/
 │       ├── log_explainer_agent/
 │       └── llm_defense/
-│
 ├── Dockerfile
 ├── compose.yml
 └── README.md
+
 
 ---
 
