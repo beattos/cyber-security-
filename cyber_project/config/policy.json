@@ -1,0 +1,11 @@
+{
+  "static_mal_threshold": 0.5,
+  "dynamic_mal_threshold": 0.90,
+  "static_t_high": 0.75,
+  "static_t_low": 0.45,
+  "dynamic_t_high": 0.80,
+  "dynamic_t_low": 0.55,
+  "disagreement_penalty": 0.15,
+  "impute_penalty_mid": 0.05,
+  "impute_penalty_high": 0.15
+}

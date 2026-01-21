@@ -1,0 +1,1 @@
+["count_mutex", "files_operations", "count_file_read", "count_file_written", "count_file_exists", "count_file_deleted", "count_file_copied", "count_regkey_written", "count_regkey_deleted", "count_file_opened", "count_dll_loaded"]
