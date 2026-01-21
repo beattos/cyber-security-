@@ -35,34 +35,6 @@ High-Level Architecture
 In streaming mode, Kafka is used only as a transport layer:
 Producers → Kafka → Detection Engine → Kafka → Consumers
 
-Project Structure
-cyber_project/
-├── src/
-│   ├── agents/          # Inference agents (static & dynamic)
-│   ├── pipeline/        # Orchestrator, judge, enforcement
-│   ├── streaming/       # Kafka consumer/producer helpers
-│   └── common/          # Shared contracts and utilities
-│
-├── models/              # Trained & calibrated ML models
-├── artifacts/           # Feature order definitions
-├── config/
-│   └── policy.json      # All thresholds & penalties
-│
-├── data/                # Clean CSV feature datasets
-├── outputs/             # Generated reports (not committed)
-│
-├── run_system.py        # Single-sample demo
-├── run_batch.py         # Batch inference
-├── run_eval_split.py    # Test set evaluation
-├── run_kafka_consumer.py
-├── run_kafka_producer_demo.py
-├── run_kafka_print_decisions.py
-│
-├── docker-compose.yml
-├── Dockerfile
-├── requirements.txt
-└── README.md
-
 Detection Logic Overview
 Inference agents
 Static analysis
@@ -144,3 +116,31 @@ Debugging
 Inference debug output is disabled by default.
 Enable debug logs:
 DEBUG_INFER=1 docker compose run --rm cyber python run_batch.py
+
+Project Structure
+cyber_project/
+├── src/
+│   ├── agents/          # Inference agents (static & dynamic)
+│   ├── pipeline/        # Orchestrator, judge, enforcement
+│   ├── streaming/       # Kafka consumer/producer helpers
+│   └── common/          # Shared contracts and utilities
+│
+├── models/              # Trained & calibrated ML models
+├── artifacts/           # Feature order definitions
+├── config/
+│   └── policy.json      # All thresholds & penalties
+│
+├── data/                # Clean CSV feature datasets
+├── outputs/             # Generated reports (not committed)
+│
+├── run_system.py        # Single-sample demo
+├── run_batch.py         # Batch inference
+├── run_eval_split.py    # Test set evaluation
+├── run_kafka_consumer.py
+├── run_kafka_producer_demo.py
+├── run_kafka_print_decisions.py
+│
+├── docker-compose.yml
+├── Dockerfile
+├── requirements.txt
+└── README.md
