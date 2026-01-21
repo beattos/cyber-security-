@@ -120,33 +120,34 @@ python -m pipeline.run_stream_demo \
   --interactive_review \
   --suppress_sklearn_pickle_warnings
 ```
-Example per-event output
-[PRODUCER→PIPELINE] event=12 source=dynamic
-[ROUTE] dynamic_model
-[INFERENCE] p_malware=0.78
-[DECISION] REVIEW
+## Example per-event output
+[EVENT]        id=12  source=dynamic
+[ROUTING]      model=dynamic_model
+[INFERENCE]    p_malware=0.78
+[DECISION]     REVIEW
 
-🐳 Run with Docker (Reproducible)
+
+## 🐳 Run with Docker (Reproducible)
 [docker compose up --build]
 Docker runs the pipeline end-to-end, prints a summary, and exits cleanly.
 
-📊 Example Output Summary
+## 📊 Example Output Summary
 Total events: 300
 static:  ALERT=125  REVIEW=0   PASS=25
 dynamic: ALERT=50   REVIEW=100 PASS=0
 Avg latency: ~1–7 ms
 
-Interpretation
+## Interpretation
 Static analysis is fast and decisive
 Dynamic analysis captures nuanced behavior
 Many dynamic samples fall into REVIEW, demonstrating the need for human-in-the-loop decision making
 
-📁 Output Artifacts
+## 📁 Output Artifacts
 outputs/stream_results.csv
 Contains per-event predictions, confidence scores, latency, and final decisions.
 This file is generated at runtime and intentionally not tracked in Git.
 
-🧪 Course Context
+## 🧪 Course Context
 This project aligns with AI in Cybersecurity / NVIDIA Morpheus-style concepts:
 Streaming inference pipelines
 Confidence-aware decision logic
