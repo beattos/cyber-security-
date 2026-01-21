@@ -117,6 +117,7 @@ Inference debug output is disabled by default.
 Enable debug logs:
 DEBUG_INFER=1 docker compose run --rm cyber python run_batch.py
 
+```text
 Project Structure
 cyber_project/
 ├── src/
