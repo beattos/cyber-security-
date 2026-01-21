@@ -1,33 +1,7 @@
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-
-  kafka:
-    image: confluentinc/cp-kafka:7.5.0
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-
-  cyber:
+  pipeline:
     build: .
-    depends_on:
-      - kafka
-      - zookeeper
-    volumes:
-      - .:/app
     working_dir: /app
-    command: python run_system.py
+    command: [ "python", "-m", "pipeline.run_stream_demo", "--static_csv", "data/static_clean.csv", "--dynamic_csv", "data/dynamic_clean.csv", "--static_model", "models/gb_static.pkl", "--dynamic_model", "models/gb_dynamic_calibrated.pkl", "--max_events", "300", "--t_alert", "0.90", "--t_review", "0.70", "--suppress_sklearn_pickle_warnings" ]
+    volumes:
+      - ./:/app

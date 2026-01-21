@@ -1,11 +1,17 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+ && rm -rf /var/lib/apt/lists/*
 
-COPY . .
+RUN pip install --no-cache-dir \
+    pandas==2.2.2 \
+    numpy==2.1.3 \
+    joblib==1.4.2 \
+    scikit-learn==1.7.2
 
-ENV PYTHONPATH=/app
-CMD ["python", "run_demo.py"]
+COPY . /app
+
+CMD ["python", "-m", "pipeline.run_stream_demo", "--help"]

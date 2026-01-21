@@ -1,0 +1,9 @@
+
+# Generated pipeline artifacts
+outputs/
+models/*_imputer.pkl
+models/*_feature_cols.pkl
+
+# Python cache
+__pycache__/
+*.pyc
