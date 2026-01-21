@@ -1,121 +1,44 @@
-cyber_project
-Malware Detection Decision Engine (Batch + Kafka Streaming)
-Purpose
-cyber_project contains a self-contained malware detection system built as part of the Cybersecurity course labs.
-The project focuses on decision-level malware detection, operating on already-extracted static and dynamic features, and demonstrates how the same detection engine can be used in:
-Offline / batch evaluation
-Online / real-time streaming using Apache Kafka
-The goal is to show system design, policy-driven decision making, and production-style deployment, not raw feature extraction.
+# 🛡️ Cyber Security Streaming Pipeline  
+### Static vs Dynamic Malware Detection with Confidence-Based Decisions
 
-What This Project Does
-Core functionality
-Runs multiple ML models (“agents”) for malware detection
-Aggregates model outputs using a judge
-Applies confidence-based enforcement rules
-Produces final actions:
-ALLOW
-REVIEW
-NO_ACTION
-Supported execution modes
-Batch mode (CSV files)
-Evaluation mode (train/test split)
-Streaming mode (Kafka)
-All modes use the same detection logic.
+This project implements a **streaming-style producer–consumer pipeline** for malware detection, comparing **static** and **dynamic** analysis using machine learning.
 
-High-Level Architecture
-[ Static / Dynamic Features ]
-            |
-            v
-     Detection Engine
- (agents → judge → enforcement)
-            |
-            v
-      Final Decision
+Instead of focusing only on offline metrics, the system demonstrates **how models behave operationally**:  
+each sample is processed as an event, assigned a confidence score, and routed through a **SOC-style decision flow**.
 
-In streaming mode, Kafka is used only as a transport layer:
-Producers → Kafka → Detection Engine → Kafka → Consumers
+---
 
-Detection Logic Overview
-Inference agents
-Static analysis
-AdaBoost
-Gradient Boosting
-Dynamic analysis
-AdaBoost (probability-calibrated)
-Gradient Boosting (probability-calibrated)
-Judge
-Collects predictions from all relevant agents
-Checks agreement / disagreement
-Selects the most reliable agent
-Enforcement
-Applies confidence thresholds
-Applies penalties for:
-disagreement
-missing / imputed features
-Produces final action
-All thresholds are defined in config/policy.json.
+## 🎯 Project Objectives
 
-Batch / Evaluation Mode
-Build environment
-docker compose up --build
+- Build a **realistic cybersecurity inference pipeline**
+- Compare **static vs dynamic malware detection**
+- Apply **confidence-based decisions** (`ALERT / REVIEW / PASS`)
+- Simulate **SOC workflows** with human-in-the-loop logic
+- Ensure **reproducibility** with Docker
 
-Run batch inference
-docker compose run --rm cyber python run_batch.py
+---
 
-Processes full CSV datasets
-Writes reports to outputs/reports/
+## 🧠 Core Concept
 
-Run evaluation on test split
-docker compose run --rm cyber python run_eval_split.py
-Evaluates on held-out test data
-Prints classification reports
-Writes CSV test reports
+Each input sample is treated as a **streaming event**:
 
-Kafka Streaming Mode
-Kafka enables real-time ingestion of feature events.
-Topics
-malware-input — incoming feature events
-malware-decisions — decision outputs
-Start full stack
-docker compose up --build
-Starts:
-Zookeeper
-Kafka broker
-Cyber container
+CSV sample
+↓
+Producer
+↓
+Routing (Static / Dynamic)
+↓
+ML Inference
+↓
+Confidence Scoring
+↓
+Decision: ALERT / REVIEW / PASS
 
-Run detection engine as Kafka consumer
-docker compose run --rm cyber python run_kafka_consumer.py
-Behavior:
-Consumes feature events from Kafka
-Converts them to internal Sample objects
-Runs detection engine
-Publishes decisions to Kafka
-Uses at-least-once semantics
+This design reflects how real security systems operate, rather than only reporting aggregate accuracy metrics.
 
-Send demo events
-docker compose run --rm cyber python run_kafka_producer_demo.py \
-  --source-type dynamic --rows 20
-or
-docker compose run --rm cyber python run_kafka_producer_demo.py \
-  --source-type static --rows 20
+---
 
-  View decisions
-docker compose run --rm cyber python run_kafka_print_decisions.py
-Calibration
-Dynamic models are probability-calibrated to avoid over-confident predictions.
-Calibration script:
-docker compose run --rm cyber python scripts/calibrate_dynamic.py
-Produces calibrated model files under models/.
-
-Debugging
-Inference debug output is disabled by default.
-Enable debug logs:
-DEBUG_INFER=1 docker compose run --rm cyber python run_batch.py
-
-Debugging
-Inference debug output is disabled by default.
-Enable debug logs:
-DEBUG_INFER=1 docker compose run --rm cyber python run_batch.py
+## 📦 Project Structure
 
 ```text
 Project Structure
@@ -145,3 +68,87 @@ cyber_project/
 ├── Dockerfile
 ├── requirements.txt
 └── README.md
+```
+
+
+---
+
+## ⚙️ Models & Preprocessing
+
+- **Static model**  
+  Gradient Boosting classifier trained on file-level / static features
+
+- **Dynamic model**  
+  Gradient Boosting classifier trained on runtime behavioral features  
+  (calibrated for better probability estimates)
+
+- **Preprocessing**
+  - Median imputation
+  - Exact feature order preserved
+  - Same artifacts used in training and inference
+
+> Imputers and feature-column lists are **generated automatically** and are intentionally **not committed**.
+
+---
+
+## 🚦 Decision Logic (Confidence Gating)
+
+Each event produces a probability `p(malware)`.
+
+| Confidence Range | Decision |
+|------------------|----------|
+| `p ≥ 0.90`       | **ALERT** |
+| `0.70 ≤ p < 0.90`| **REVIEW** |
+| `p < 0.70`       | **PASS** |
+
+This mirrors real SOC behavior:
+- **ALERT** → immediate action  
+- **REVIEW** → analyst inspection  
+- **PASS** → no action  
+
+---
+
+## ▶️ Run Locally (CLI)
+
+```bash
+python -m pipeline.run_stream_demo \
+  --static_csv data/static_clean.csv \
+  --dynamic_csv data/dynamic_clean.csv \
+  --static_model models/gb_static.pkl \
+  --dynamic_model models/gb_dynamic_calibrated.pkl \
+  --max_events 30 \
+  --interactive_review \
+  --suppress_sklearn_pickle_warnings
+```
+Example per-event output
+[PRODUCER→PIPELINE] event=12 source=dynamic
+[ROUTE] dynamic_model
+[INFERENCE] p_malware=0.78
+[DECISION] REVIEW
+
+🐳 Run with Docker (Reproducible)
+[docker compose up --build]
+Docker runs the pipeline end-to-end, prints a summary, and exits cleanly.
+
+📊 Example Output Summary
+Total events: 300
+static:  ALERT=125  REVIEW=0   PASS=25
+dynamic: ALERT=50   REVIEW=100 PASS=0
+Avg latency: ~1–7 ms
+
+Interpretation
+Static analysis is fast and decisive
+Dynamic analysis captures nuanced behavior
+Many dynamic samples fall into REVIEW, demonstrating the need for human-in-the-loop decision making
+
+📁 Output Artifacts
+outputs/stream_results.csv
+Contains per-event predictions, confidence scores, latency, and final decisions.
+This file is generated at runtime and intentionally not tracked in Git.
+
+🧪 Course Context
+This project aligns with AI in Cybersecurity / NVIDIA Morpheus-style concepts:
+Streaming inference pipelines
+Confidence-aware decision logic
+SOC-oriented workflows
+Reproducible experimentation
