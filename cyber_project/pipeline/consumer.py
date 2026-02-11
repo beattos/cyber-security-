@@ -4,7 +4,7 @@ import os
 import time
 import warnings
 from queue import Queue
-from typing import List
+from typing import Dict, List, Optional
 
 import joblib
 import numpy as np
@@ -48,6 +48,7 @@ def consume(
     out_csv: str = "outputs/stream_results.csv",
     t_alert: float = 0.80,
     t_review: float = 0.55,
+    thresholds_by_source: Optional[Dict[str, object]] = None,
     interactive_review: bool = False,
     print_every: int = 1,
     suppress_sklearn_pickle_warnings: bool = False,
@@ -125,7 +126,12 @@ def consume(
                 p = _predict_p_malware(dynamic_model, X_df)
                 routed = "dynamic_model"
 
-            decision = _decide(p, t_alert=t_alert, t_review=t_review)
+            if thresholds_by_source and ev.source in thresholds_by_source:
+                t = thresholds_by_source[ev.source]
+                t_a, t_r = float(getattr(t, "alert", t_alert)), float(getattr(t, "review", t_review))
+            else:
+                t_a, t_r = t_alert, t_review
+            decision = _decide(p, t_alert=t_a, t_review=t_r)
 
             user_action = ""
             if interactive_review and decision == "REVIEW":

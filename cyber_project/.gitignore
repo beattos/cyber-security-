@@ -1,3 +1,16 @@
+# ML artifacts
+models/*.pkl
+models/*.joblib
+models/*.pt
+models/*.onnx
+
+# datasets / splits
+data/*.csv
+data/raw/
+data/processed/
+
+# OS
+.DS_Store
 
 # Generated pipeline artifacts
 outputs/

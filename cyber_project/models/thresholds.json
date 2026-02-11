@@ -1,0 +1,10 @@
+{
+  "static": {
+    "alert": 0.7,
+    "review": 0.5
+  },
+  "dynamic": {
+    "alert": 0.7,
+    "review": 0.5
+  }
+}

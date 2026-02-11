@@ -1,79 +1,69 @@
 # pipeline/run_stream_demo.py
+from __future__ import annotations
+
 import argparse
+import time
 from queue import Queue
 from threading import Thread
 
 import joblib
 
-from pipeline.producer import produce_both
 from pipeline.consumer import consume
+from pipeline.producer import produce_both
+from pipeline.decision import get_thresholds
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Producer–Consumer streaming demo (static + dynamic).")
-    parser.add_argument("--static_csv", required=True)
-    parser.add_argument("--dynamic_csv", required=True)
-    parser.add_argument("--static_model", required=True)
-    parser.add_argument("--dynamic_model", required=True)
-    parser.add_argument("--out_csv", default="outputs/stream_results.csv")
-    parser.add_argument("--t_alert", type=float, default=0.80)
-    parser.add_argument("--t_review", type=float, default=0.55)
-    parser.add_argument("--interleave", choices=["alternate", "random"], default="alternate")
-    parser.add_argument("--max_events", type=int, default=None)
-    parser.add_argument("--sleep_ms", type=int, default=0)
-    parser.add_argument("--interactive_review", action="store_true")
-    parser.add_argument("--print_every", type=int, default=1)
-    parser.add_argument(
-        "--suppress_sklearn_pickle_warnings",
-        action="store_true",
-        help="Hide scikit-learn version mismatch warnings during demo output.",
-    )
+    ap = argparse.ArgumentParser(description="Streaming demo: producer -> consumer malware detection")
+    ap.add_argument("--static_csv", required=True)
+    ap.add_argument("--dynamic_csv", required=True)
+    ap.add_argument("--static_model", required=True)
+    ap.add_argument("--dynamic_model", required=True)
+    ap.add_argument("--max_events", type=int, default=300)
+    ap.add_argument("--sleep_ms", type=int, default=0)
+    ap.add_argument("--interactive_review", action="store_true")
+    ap.add_argument("--suppress_sklearn_pickle_warnings", action="store_true")
+    ap.add_argument("--thresholds_json", default=None, help="Optional path to thresholds.json (defaults to models/thresholds.json)")
+    args = ap.parse_args()
 
-    args = parser.parse_args()
+    thresholds = get_thresholds(args.thresholds_json)
 
-    # Load exact feature order from saved artifacts (no manual lists)
+    print("\n=== STREAM DEMO START ===")
+    print(f"Static model : {args.static_model}")
+    print(f"Dynamic model: {args.dynamic_model}")
+    print(f"Thresholds   : static(ALERT>={thresholds['static'].alert:.2f}, REVIEW>={thresholds['static'].review:.2f}) | "
+          f"dynamic(ALERT>={thresholds['dynamic'].alert:.2f}, REVIEW>={thresholds['dynamic'].review:.2f})")
+    print("=========================\n")
+
+    q = Queue()
     static_cols = joblib.load("models/static_feature_cols.pkl")
     dynamic_cols = joblib.load("models/dynamic_feature_cols.pkl")
 
-    q = Queue(maxsize=1000)
-
-    t_prod = Thread(
-        target=produce_both,
-        kwargs=dict(
-            q=q,
+    def run_producer():
+        produce_both(
+            q,
             static_csv=args.static_csv,
             dynamic_csv=args.dynamic_csv,
             static_feature_cols=static_cols,
             dynamic_feature_cols=dynamic_cols,
-            label_col="label",
-            interleave=args.interleave,
-            seed=42,
             max_events=args.max_events,
             sleep_ms=args.sleep_ms,
-        ),
-        daemon=True,
-    )
+        )
 
-    t_cons = Thread(
-        target=consume,
-        kwargs=dict(
-            q=q,
-            static_model_path=args.static_model,
-            dynamic_model_path=args.dynamic_model,
-            out_csv=args.out_csv,
-            t_alert=args.t_alert,
-            t_review=args.t_review,
-            interactive_review=args.interactive_review,
-            print_every=args.print_every,
-            suppress_sklearn_pickle_warnings=args.suppress_sklearn_pickle_warnings,
-        ),
-        daemon=True,
+    start = time.time()
+    prod_thread = Thread(target=run_producer)
+    prod_thread.start()
+    consume(
+        q,
+        static_model_path=args.static_model,
+        dynamic_model_path=args.dynamic_model,
+        thresholds_by_source=thresholds,
+        interactive_review=args.interactive_review,
+        suppress_sklearn_pickle_warnings=args.suppress_sklearn_pickle_warnings,
     )
-
-    t_prod.start()
-    t_cons.start()
-    t_prod.join()
-    t_cons.join()
+    prod_thread.join()
+    elapsed = time.time() - start
+    print(f"\nTotal stream time: {elapsed:.1f}s")
 
 
 if __name__ == "__main__":
