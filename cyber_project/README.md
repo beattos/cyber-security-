@@ -341,36 +341,6 @@ Static model achieves near-perfect separation (ROC-AUC 0.9999, PR-AUC 1.0000) wi
 
 ---
 
-## Future Work
-
-**Explainability:**
-- SHAP (SHapley Additive exPlanations) analysis to identify feature importance
-- Per-sample attribution to understand static vs dynamic disagreement patterns
-- Model-agnostic interpretability for operational transparency
-
-**Real Streaming Backend:**
-- Integration with Kafka or NVIDIA Morpheus-style streaming frameworks
-- Real-time event processing with sub-millisecond latency requirements
-- Distributed inference across multiple nodes
-
-**MITRE ATT&CK Mapping:**
-- Map detection decisions to MITRE ATT&CK techniques
-- Tactic-level performance analysis
-- Adversarial technique coverage assessment
-
-**Adversarial Robustness:**
-- Evaluation against evasion techniques (packing, obfuscation, API hooking)
-- Adversarial training to improve robustness
-- Static vs dynamic robustness comparison under adversarial conditions
-
-**Feature Engineering:**
-- API call sequence modeling (n-grams, LSTM)
-- Entropy and statistical features for static analysis
-- Graph-based features for dynamic behavior
-- Multi-modal fusion of static and dynamic features
-
----
-
 ## Quickstart
 
 Execute the complete pipeline:
