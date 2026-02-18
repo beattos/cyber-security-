@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import warnings
 from typing import Dict, Tuple
 
 import joblib
@@ -11,6 +12,14 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import confusion_matrix, roc_auc_score, f1_score
+
+# Suppress only specific sklearn warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+try:
+    from sklearn.exceptions import InconsistentVersionWarning
+    warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
+except ImportError:
+    pass
 
 
 def ensure_dir(path: str):
@@ -26,7 +35,8 @@ def load_csv(path: str, label_col: str) -> pd.DataFrame:
 
 
 def fit_artifacts(df_train: pd.DataFrame, label_col: str) -> Tuple[SimpleImputer, list]:
-    feature_cols = [c for c in df_train.columns if c != label_col]
+    # Exclude label and sample_id from features
+    feature_cols = [c for c in df_train.columns if c not in (label_col, "sample_id")]
     imputer = SimpleImputer(strategy="median")
     imputer.fit(df_train[feature_cols])
     return imputer, feature_cols
@@ -96,8 +106,14 @@ def train_one(name: str, train_csv: str, val_csv: str, test_csv: str, label_col:
     base = GradientBoostingClassifier(random_state=42)
     base.fit(X_tr, y_tr)
 
-    # Calibrate on validation (cv="prefit" is minimal-change and appropriate here)
-    calib = CalibratedClassifierCV(base, method="sigmoid", cv="prefit")
+    # Calibrate on validation (using FrozenEstimator for sklearn 1.6+ compatibility)
+    try:
+        from sklearn.frozen import FrozenEstimator
+        frozen_base = FrozenEstimator(base)
+        calib = CalibratedClassifierCV(frozen_base, method="sigmoid")
+    except ImportError:
+        # Fallback for older sklearn versions
+        calib = CalibratedClassifierCV(base, method="sigmoid", cv="prefit")
     calib.fit(X_va, y_va)
 
     p_va = get_proba(calib, X_va)

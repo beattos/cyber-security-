@@ -1,4 +1,12 @@
 """
+ABLATION STUDY SCRIPT - NOT PART OF MAIN PIPELINE
+
+This script performs ablation studies comparing F0 vs F1 feature sets.
+It regenerates splits and retrains models, which is acceptable for research
+but not part of the main evaluation pipeline.
+
+For standard evaluation, use evaluate_threshold_free_demo.py instead.
+
 Threshold-free evaluation: ROC-AUC and PR-AUC for dynamic models.
 Evaluates AdaBoost vs GradientBoosting on F0 vs F1 feature sets.
 """

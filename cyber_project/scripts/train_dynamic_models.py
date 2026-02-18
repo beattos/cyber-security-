@@ -1,10 +1,19 @@
 """
 Train both AdaBoost and GradientBoosting models for dynamic data.
 Supports F0 (11 features) and F1 (17 features) datasets.
+
+Protocol:
+- Fit base models on train split
+- Calibrate on val split (for threshold tuning and test evaluation)
+- Evaluate on test split
+
+Note: Calibrated models are saved by Stage 2 (calibrate_dynamic.py).
+This script saves only base models (*_dynamic.pkl).
 """
 import argparse
 import json
 import os
+import warnings
 from typing import Dict, Tuple
 
 import joblib
@@ -14,6 +23,14 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import confusion_matrix, roc_auc_score, f1_score, classification_report
+
+# Suppress only specific sklearn warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+try:
+    from sklearn.exceptions import InconsistentVersionWarning
+    warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
+except ImportError:
+    pass
 
 
 def ensure_dir(path: str):
@@ -29,7 +46,8 @@ def load_csv(path: str, label_col: str) -> pd.DataFrame:
 
 
 def fit_artifacts(df_train: pd.DataFrame, label_col: str) -> Tuple[SimpleImputer, list]:
-    feature_cols = [c for c in df_train.columns if c != label_col]
+    # Exclude label and sample_id from features
+    feature_cols = [c for c in df_train.columns if c not in (label_col, "sample_id")]
     imputer = SimpleImputer(strategy="median")
     imputer.fit(df_train[feature_cols])
     return imputer, feature_cols
@@ -113,19 +131,28 @@ def train_one_model(
 
     base.fit(X_tr, y_tr)
 
-    # Calibrate on validation
+    # Calibrate on validation (using FrozenEstimator for sklearn 1.6+ compatibility)
     try:
+        from sklearn.frozen import FrozenEstimator
+        frozen_base = FrozenEstimator(base)
         calibrator = CalibratedClassifierCV(
-            estimator=base,
+            estimator=frozen_base,
             method="sigmoid",
-            cv="prefit",
         )
-    except TypeError:
-        calibrator = CalibratedClassifierCV(
-            base_estimator=base,
-            method="sigmoid",
-            cv="prefit",
-        )
+    except ImportError:
+        # Fallback for older sklearn versions
+        try:
+            calibrator = CalibratedClassifierCV(
+                estimator=base,
+                method="sigmoid",
+                cv="prefit",
+            )
+        except TypeError:
+            calibrator = CalibratedClassifierCV(
+                base_estimator=base,
+                method="sigmoid",
+                cv="prefit",
+            )
     calibrator.fit(X_va, y_va)
 
     p_va = get_proba(calibrator, X_va)
@@ -179,7 +206,8 @@ def train_one_model(
     # Save artifacts
     ensure_dir(out_dir)
     joblib.dump(base, os.path.join(out_dir, f"{model_type}_dynamic.pkl"))
-    joblib.dump(calibrator, os.path.join(out_dir, f"{model_type}_dynamic_calibrated.pkl"))
+    # Note: Calibrated models are saved by Stage 2 (calibrate_dynamic.py)
+    # We keep calibrator here only for threshold tuning and test evaluation
     
     # Save imputer and feature_cols (overwrite if exists, but that's fine for consistent feature sets)
     joblib.dump(imputer, os.path.join(out_dir, "dynamic_imputer.pkl"))

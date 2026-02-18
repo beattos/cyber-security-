@@ -1,3 +1,15 @@
+"""
+UTILITY SCRIPT - NOT PART OF MAIN PIPELINE
+
+This script exports preprocessing artifacts (imputers, feature columns) for
+compatibility with older workflows. It fits imputers on the full dataset
+(dynamic_clean.csv) which includes test data.
+
+WARNING: The main pipeline (run_full_demo.sh) uses imputers fitted during
+training on train split only. This script is for legacy support only.
+
+For production use, rely on artifacts saved by train_dynamic_models.py.
+"""
 import os
 import joblib
 import pandas as pd
@@ -20,7 +32,8 @@ def main():
     if label_col not in static_train.columns:
         raise ValueError(f"{static_train_csv} has no '{label_col}' column. Found columns: {list(static_train.columns)[:10]}...")
 
-    Xs = static_train.drop(columns=[label_col])
+    # Exclude label and sample_id from features
+    Xs = static_train.drop(columns=[label_col, "sample_id"], errors="ignore")
     static_feature_cols = list(Xs.columns)
 
     static_imputer = SimpleImputer(strategy="median")
@@ -38,7 +51,8 @@ def main():
     if label_col not in dynamic_train.columns:
         raise ValueError(f"{dynamic_train_csv} has no '{label_col}' column. Found columns: {list(dynamic_train.columns)[:10]}...")
 
-    Xd = dynamic_train.drop(columns=[label_col])
+    # Exclude label and sample_id from features
+    Xd = dynamic_train.drop(columns=[label_col, "sample_id"], errors="ignore")
     dynamic_feature_cols = list(Xd.columns)
 
     dynamic_imputer = SimpleImputer(strategy="median")

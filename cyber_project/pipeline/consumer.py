@@ -81,12 +81,8 @@ def consume(
 
     os.makedirs(os.path.dirname(out_csv) or ".", exist_ok=True)
 
-    print("\n=== STREAM DEMO START ===")
-    print(f"Static model : {static_model_path}")
-    print(f"Dynamic model: {dynamic_model_path}")
-    print(f"Thresholds   : ALERT>={t_alert:.2f}, REVIEW>={t_review:.2f}")
-    print(f"Features     : static={len(static_cols)}, dynamic={len(dynamic_cols)}")
-    print("=========================\n")
+    # Banner is printed by run_stream_demo.py with correct thresholds from thresholds.json
+    # This function uses thresholds_by_source if provided, else falls back to t_alert/t_review defaults
 
     counters = {
         "static": {"ALERT": 0, "REVIEW": 0, "PASS": 0},

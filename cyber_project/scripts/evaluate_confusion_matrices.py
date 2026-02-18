@@ -73,28 +73,9 @@ def main():
         y_pred_asrun = sub["decision"].apply(binary_from_decision).to_numpy()
         print_cm_block(f"{src.upper()} | A) As-run decision (ALERT/REVIEW=1, PASS=0)", y_true, y_pred_asrun)
 
-        # B) Auto-policy decision from thresholds.json (ignores any interactive overrides)
-        t_alert = float(thresholds.get(src, {}).get("alert", 0.80))
-        t_review = float(thresholds.get(src, {}).get("review", 0.55))
-
-        sub["auto_decision"] = sub["p_malware"].apply(lambda p: decision_from_thresholds(p, t_alert, t_review))
-        y_pred_auto = sub["auto_decision"].apply(binary_from_decision).to_numpy()
-        print_cm_block(
-            f"{src.upper()} | B) Auto-policy from thresholds.json (alert>={t_alert:.2f}, review>={t_review:.2f})",
-            y_true,
-            y_pred_auto,
-        )
-
-        # C) Pure probability threshold at 0.50 (model-only)
-        y_pred_p05 = (sub["p_malware"].to_numpy() >= 0.5).astype(int)
-        print_cm_block(f"{src.upper()} | C) Pure probability @0.50 (model-only)", y_true, y_pred_p05)
-
         # Extra: triage distribution
         triage_counts = sub["decision"].value_counts().to_dict()
         print(f"\n{src.upper()} triage distribution (as-run): {triage_counts}")
-
-        auto_counts = sub["auto_decision"].value_counts().to_dict()
-        print(f"{src.upper()} triage distribution (auto-policy): {auto_counts}")
 
 
 if __name__ == "__main__":

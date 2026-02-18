@@ -71,20 +71,13 @@ echo ">>> STAGE 4b: THRESHOLD-FREE EVALUATION (ROC-AUC, PR-AUC)"
 echo "--------------------------------------------------------------------------------"
 python scripts/evaluate_threshold_free_demo.py --output_dir outputs/ablation
 
-# --- Stage 5: Per-sample static vs dynamic comparison (sample_id) ---
+# --- Stage 5b: Per-sample static vs dynamic comparison (TEST ONLY, by sample_id) ---
 echo ""
-echo ">>> STAGE 5: PER-SAMPLE STATIC vs DYNAMIC COMPARISON (by sample_id)"
+echo ">>> STAGE 5b: PER-SAMPLE STATIC vs DYNAMIC COMPARISON (TEST ONLY, by sample_id)"
 echo "--------------------------------------------------------------------------------"
-if [[ ! -f data/static_clean_with_id.csv || ! -f data/dynamic_clean_with_id.csv ]]; then
-  echo "Creating sample_id and _with_id datasets..."
-  python scripts/create_sample_id.py \
-    --static_csv data/static_clean.csv \
-    --dynamic_csv data/dynamic_clean.csv \
-    --output_dir outputs/ablation
-fi
-python scripts/run_per_sample_comparison.py \
-  --static_with_id data/static_clean_with_id.csv \
-  --dynamic_with_id data/dynamic_clean_with_id.csv \
+python scripts/compare_static_dynamic_by_sample_test.py \
+  --static_test data/static_test.csv \
+  --dynamic_test data/dynamic_test.csv \
   --output_dir outputs/ablation \
   --head 15
 
@@ -97,7 +90,7 @@ echo ""
 echo "Artifacts:"
 echo "  - models/thresholds.json"
 echo "  - outputs/stream_results.csv"
-echo "  - outputs/ablation/static_vs_dynamic_by_sample.csv"
+echo "  - outputs/ablation/static_vs_dynamic_by_sample_test.csv"
 echo "  - outputs/ablation/threshold_free_demo.json"
 echo "  - outputs/reports/train_val_test_report.json"
 echo "  - outputs/reports/dynamic_models_report.json"
