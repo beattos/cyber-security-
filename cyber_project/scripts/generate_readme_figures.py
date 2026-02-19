@@ -233,14 +233,21 @@ def plot_agreement_heatmap(output_path):
     """Plot agreement heatmap from per-sample comparison. Only numeric counts in cells."""
     fig, ax = plt.subplots(figsize=(7, 6))
     
+    # Statistics from Stage 5 printed output
+    both_correct = 441
+    static_ok_dynamic_wrong = 88
+    static_wrong_dynamic_ok = 2
+    both_wrong = 2
+    
     # Matrix structure:
     # X-axis: Static (Correct on left, Wrong on right)
     # Y-axis: Dynamic (Correct on top, Wrong on bottom)
-    # [[Both Correct, Static Wrong & Dynamic Correct],
-    #  [Static Correct & Dynamic Wrong, Both Wrong]]
+    # Row = Dynamic, Col = Static
+    # [[both_correct, static_wrong_dynamic_ok],
+    #  [static_ok_dynamic_wrong, both_wrong]]
     matrix = np.array([
-        [441, 2],    # Dynamic Correct: Static Correct (441), Static Wrong (2)
-        [88, 2]      # Dynamic Wrong: Static Correct (88), Static Wrong (2)
+        [both_correct, static_wrong_dynamic_ok],      # Dynamic Correct: Static Correct (441), Static Wrong (2)
+        [static_ok_dynamic_wrong, both_wrong]         # Dynamic Wrong: Static Correct (88), Static Wrong (2)
     ])
     
     im = ax.matshow(matrix, cmap="YlOrRd", alpha=0.8)
