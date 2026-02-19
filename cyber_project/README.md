@@ -336,7 +336,7 @@ Static model achieves near-perfect separation (ROC-AUC 0.9999, PR-AUC 1.0000) wi
 - Dynamic model's behavioral features may be more robust but untested
 
 **Feature Engineering:**
-- Static features (11) and dynamic features (11) are fixed; no feature selection or engineering performed
+- Static features and dynamic features are fixed; no feature selection or engineering performed
 - Domain-specific features (e.g., API call sequences, entropy measures) may improve performance
 
 ---
