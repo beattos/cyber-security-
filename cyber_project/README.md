@@ -21,7 +21,7 @@ Traditional malware detection systems report aggregate accuracy metrics but fail
 
 The pipeline processes malware samples through seven stages (0-5 plus evaluation sub-stages 4a/4b), maintaining strict train/validation/test separation throughout:
 
-![Pipeline](docs/pipeline.png)
+![Pipeline](docs/pipeline.svg)
 
 **Stage 0: Dataset Loading and Splitting**
 - Ensures `sample_id`-enriched datasets exist (`data/static_clean_with_id.csv` and `data/dynamic_clean_with_id.csv`)
