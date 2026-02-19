@@ -406,5 +406,5 @@ python scripts/evaluate_threshold_free_demo.py
 # Stage 5: Per-sample comparison
 python scripts/compare_static_dynamic_by_sample_test.py
 ```
- The entire proccess of working on this project is described in detail in this [project report](./AI%20Driven%20Cybersecurity%20-%20Project%20Report.pdf)
+## The entire proccess of working on this project is described in detail in this [project report](./AI%20Driven%20Cybersecurity%20-%20Project%20Report.pdf)
 
