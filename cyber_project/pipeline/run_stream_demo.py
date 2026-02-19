@@ -15,8 +15,8 @@ from pipeline.decision import get_thresholds
 
 def main():
     ap = argparse.ArgumentParser(description="Streaming demo: producer -> consumer malware detection")
-    ap.add_argument("--static_csv", required=True)
-    ap.add_argument("--dynamic_csv", required=True)
+    ap.add_argument("--static_csv", default="data/static_clean_with_id.csv")
+    ap.add_argument("--dynamic_csv", default="data/dynamic_clean_with_id.csv")
     ap.add_argument("--static_model", required=True)
     ap.add_argument("--dynamic_model", required=True)
     ap.add_argument("--max_events", type=int, default=300)

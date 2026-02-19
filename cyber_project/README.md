@@ -24,10 +24,12 @@ The pipeline processes malware samples through seven stages (0-5 plus evaluation
 ![Pipeline](docs/pipeline.png)
 
 **Stage 0: Dataset Loading and Splitting**
-- Loads expected input datasets (`data/static_clean.csv` and `data/dynamic_clean.csv`)
-- Creates shared `sample_id` via identifier column or validated row alignment (≥99.9% label agreement)
-- Generates 70/15/15 train/validation/test splits with stratification
+- Ensures `sample_id`-enriched datasets exist (`data/static_clean_with_id.csv` and `data/dynamic_clean_with_id.csv`)
+  - If `*_with_id.csv` files exist, uses them directly (no regeneration)
+  - Otherwise, loads original clean CSVs (`data/static_clean.csv`, `data/dynamic_clean.csv`), creates shared `sample_id` via identifier column or validated row alignment (≥99.9% label agreement), and saves `*_with_id.csv` files
+- Generates 70/15/15 train/validation/test splits with stratification from `*_with_id.csv` files
 - Outputs: Generated split files `data/{static,dynamic}_{train,val,test}.csv` (all include `sample_id`)
+- **Note:** `sample_id` is persisted once into `*_with_id.csv` files to ensure stability across pipeline reruns. These files are regenerated deterministically if missing.
 
 **Stage 1: Model Training**
 - Trains GradientBoosting classifiers for static and dynamic data
@@ -47,6 +49,7 @@ The pipeline processes malware samples through seven stages (0-5 plus evaluation
 
 **Stage 3: Streaming Demo**
 - Simulates event stream from full dataset (inference-only, no training)
+- Uses `data/static_clean_with_id.csv` and `data/dynamic_clean_with_id.csv` by default (ensures `sample_id` is available)
 - Routes events to static or dynamic models based on source
 - Applies thresholds from `models/thresholds.json`
 - Generates triage decisions (ALERT/REVIEW/PASS)
@@ -92,9 +95,11 @@ cyber_project/
 │   ├── consumer.py                       # Model inference + decision logic
 │   └── decision.py                       # Threshold loading
 ├── data/
-│   ├── static_clean.csv                  # Expected input: Full static dataset
-│   ├── dynamic_clean.csv                 # Expected input: Full dynamic dataset
-│   ├── {static,dynamic}_{train,val,test}.csv  # Generated: Stage 0 splits
+│   ├── static_clean.csv                  # Expected input: Full static dataset (original)
+│   ├── dynamic_clean.csv                 # Expected input: Full dynamic dataset (original)
+│   ├── static_clean_with_id.csv         # Generated: Static dataset with sample_id (Stage 0)
+│   ├── dynamic_clean_with_id.csv        # Generated: Dynamic dataset with sample_id (Stage 0)
+│   ├── {static,dynamic}_{train,val,test}.csv  # Generated: Stage 0 splits (include sample_id)
 │   └── ...
 ├── models/
 │   ├── thresholds.json                   # Generated: Selected thresholds (Stage 2)
@@ -389,8 +394,8 @@ python scripts/train_dynamic_models.py --dynamic_train data/dynamic_train.csv ..
 # Stage 2: Calibration
 python scripts/calibrate_dynamic.py
 
-# Stage 3: Streaming
-python -m pipeline.run_stream_demo --static_csv data/static_clean.csv ...
+# Stage 3: Streaming (defaults to *_with_id.csv)
+python -m pipeline.run_stream_demo --static_csv data/static_clean_with_id.csv --dynamic_csv data/dynamic_clean_with_id.csv ...
 
 # Stage 4a: Confusion matrices
 python scripts/evaluate_confusion_matrices.py

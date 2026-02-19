@@ -4,6 +4,54 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
+def ensure_with_sample_id(static_clean_path: str, dynamic_clean_path: str, label_col: str = "label") -> tuple[str, str]:
+    """
+    Ensure *_with_id.csv files exist with sample_id column.
+    
+    If files exist, return their paths. Otherwise, generate them from original clean CSVs
+    by validating alignment and creating sample_id, then save and return paths.
+    
+    Args:
+        static_clean_path: Path to static_clean.csv
+        dynamic_clean_path: Path to dynamic_clean.csv
+        label_col: Label column name for validation
+        
+    Returns:
+        Tuple of (static_with_id_path, dynamic_with_id_path)
+    """
+    static_with_id_path = static_clean_path.replace("_clean.csv", "_clean_with_id.csv")
+    dynamic_with_id_path = dynamic_clean_path.replace("_clean.csv", "_clean_with_id.csv")
+    
+    # If both files exist, return them immediately
+    if os.path.exists(static_with_id_path) and os.path.exists(dynamic_with_id_path):
+        return static_with_id_path, dynamic_with_id_path
+    
+    # Otherwise, generate them from original clean CSVs
+    print(f"Generating {os.path.basename(static_with_id_path)} and {os.path.basename(dynamic_with_id_path)}...")
+    
+    static_df = pd.read_csv(static_clean_path)
+    dynamic_df = pd.read_csv(dynamic_clean_path)
+    
+    # Drop EDA-only column
+    dynamic_df = dynamic_df.drop(columns=["total_activity"], errors="ignore")
+    
+    # Create shared sample_id
+    static_df, dynamic_df = create_shared_sample_id(static_df, dynamic_df, label_col=label_col)
+    
+    # Verify sample_id was created
+    if "sample_id" not in static_df.columns or "sample_id" not in dynamic_df.columns:
+        raise ValueError("Failed to create sample_id. Check dataset alignment.")
+    
+    # Save with sample_id
+    static_df.to_csv(static_with_id_path, index=False)
+    dynamic_df.to_csv(dynamic_with_id_path, index=False)
+    
+    print(f"Saved: {static_with_id_path} ({len(static_df)} rows, {static_df['sample_id'].nunique()} unique sample_id)")
+    print(f"Saved: {dynamic_with_id_path} ({len(dynamic_df)} rows, {dynamic_df['sample_id'].nunique()} unique sample_id)")
+    
+    return static_with_id_path, dynamic_with_id_path
+
+
 def create_shared_sample_id(static_df: pd.DataFrame, dynamic_df: pd.DataFrame, label_col: str = "label") -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Create shared sample_id for static and dynamic datasets.
@@ -15,7 +63,6 @@ def create_shared_sample_id(static_df: pd.DataFrame, dynamic_df: pd.DataFrame, l
     """
     # Check for existing sample_id
     if "sample_id" in static_df.columns and "sample_id" in dynamic_df.columns:
-        print("sample_id already exists in both datasets, using existing values.")
         return static_df, dynamic_df
     
     # Check for common identifier columns
@@ -35,7 +82,6 @@ def create_shared_sample_id(static_df: pd.DataFrame, dynamic_df: pd.DataFrame, l
             if (static_df[candidate].nunique() == len(static_df) and 
                 dynamic_df[candidate].nunique() == len(dynamic_df)):
                 join_key = candidate
-                print(f"Using existing identifier column '{candidate}' as sample_id")
                 break
     
     if join_key:
@@ -65,10 +111,6 @@ def create_shared_sample_id(static_df: pd.DataFrame, dynamic_df: pd.DataFrame, l
         dynamic_labels = dynamic_df[label_col].reset_index(drop=True).values
         agreement = (static_labels == dynamic_labels).mean()
         
-        # Print diagnostics
-        print(f"[sample_id fallback] Row count: {len(static_df)}")
-        print(f"[sample_id fallback] Label agreement: {agreement*100:.4f}%")
-        
         # Step 3: Fail fast if alignment is unsafe
         if agreement < 0.999:
             mismatches = (static_labels != dynamic_labels).sum()
@@ -81,12 +123,10 @@ def create_shared_sample_id(static_df: pd.DataFrame, dynamic_df: pd.DataFrame, l
             )
         
         # Step 4: Validation passed - create sample_id
-        print("[sample_id fallback] Alignment validated. Creating sample_id from row index.")
         static_df = static_df.copy()
         dynamic_df = dynamic_df.copy()
         static_df.insert(0, "sample_id", range(len(static_df)))
         dynamic_df.insert(0, "sample_id", range(len(dynamic_df)))
-        print(f"Created sample_id from row index (0 to {len(static_df)-1})")
     
     return static_df, dynamic_df
 
@@ -132,28 +172,26 @@ def main():
 
     os.makedirs("data", exist_ok=True)
 
-    # Load both datasets
+    # Ensure *_with_id.csv files exist (generates if missing)
+    static_with_id, dynamic_with_id = ensure_with_sample_id(
+        args.static_csv, args.dynamic_csv, label_col=args.label_col
+    )
+
+    # Load datasets with sample_id already present
     print("Loading datasets...")
-    static_df = pd.read_csv(args.static_csv)
-    dynamic_df = pd.read_csv(args.dynamic_csv)
+    static_df = pd.read_csv(static_with_id)
+    dynamic_df = pd.read_csv(dynamic_with_id)
     
     if args.label_col not in static_df.columns:
-        raise ValueError(f"static: missing '{args.label_col}' in {args.static_csv}")
+        raise ValueError(f"static: missing '{args.label_col}' in {static_with_id}")
     if args.label_col not in dynamic_df.columns:
-        raise ValueError(f"dynamic: missing '{args.label_col}' in {args.dynamic_csv}")
-
-    # Drop EDA-only column
-    dynamic_df = dynamic_df.drop(columns=["total_activity"], errors="ignore")
+        raise ValueError(f"dynamic: missing '{args.label_col}' in {dynamic_with_id}")
     
-    # Create shared sample_id BEFORE splitting
-    print("\nCreating shared sample_id...")
-    static_df, dynamic_df = create_shared_sample_id(static_df, dynamic_df, label_col=args.label_col)
-    
-    # Verify sample_id was created
+    # Verify sample_id exists
     if "sample_id" not in static_df.columns or "sample_id" not in dynamic_df.columns:
-        raise ValueError("Failed to create sample_id. Check dataset alignment.")
+        raise ValueError("sample_id missing in *_with_id.csv files. Regenerate them.")
     
-    print(f"sample_id created: {static_df['sample_id'].nunique()} unique values in static, "
+    print(f"Using datasets with sample_id: {static_df['sample_id'].nunique()} unique values in static, "
           f"{dynamic_df['sample_id'].nunique()} unique values in dynamic")
 
     # Split both datasets (sample_id will be preserved)

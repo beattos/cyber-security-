@@ -13,6 +13,16 @@ echo "==========================================================================
 echo "  FULL PIPELINE DEMO - $(date '+%Y-%m-%d %H:%M:%S')"
 echo "================================================================================"
 
+# --- Smoke test: Check which source files are being used ---
+echo ""
+echo ">>> SOURCE FILES CHECK"
+echo "--------------------------------------------------------------------------------"
+if [ -f "data/static_clean_with_id.csv" ] && [ -f "data/dynamic_clean_with_id.csv" ]; then
+    echo "Using persisted files: data/static_clean_with_id.csv, data/dynamic_clean_with_id.csv"
+else
+    echo "Will generate: data/static_clean_with_id.csv, data/dynamic_clean_with_id.csv from original clean CSVs"
+fi
+
 # --- Stage 0: Data / Splits ---
 echo ""
 echo ">>> STAGE 0: DATA / SPLITS (load datasets, create train/val/test)"
@@ -52,8 +62,8 @@ echo ""
 echo ">>> STAGE 3: STREAM DEMO (static + dynamic events -> pipeline -> stream_results.csv)"
 echo "--------------------------------------------------------------------------------"
 python -m pipeline.run_stream_demo \
-  --static_csv data/static_clean.csv \
-  --dynamic_csv data/dynamic_clean.csv \
+  --static_csv data/static_clean_with_id.csv \
+  --dynamic_csv data/dynamic_clean_with_id.csv \
   --static_model models/gb_static_calibrated.pkl \
   --dynamic_model models/gb_dynamic_calibrated.pkl \
   --max_events 400 \

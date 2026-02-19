@@ -2,6 +2,6 @@ services:
   pipeline:
     build: .
     working_dir: /app
-    command: [ "python", "-m", "pipeline.run_stream_demo", "--static_csv", "data/static_clean.csv", "--dynamic_csv", "data/dynamic_clean.csv", "--static_model", "models/gb_static.pkl", "--dynamic_model", "models/gb_dynamic_calibrated.pkl", "--max_events", "300", "--t_alert", "0.90", "--t_review", "0.70", "--suppress_sklearn_pickle_warnings" ]
+    command: [ "python", "-m", "pipeline.run_stream_demo", "--static_csv", "data/static_clean_with_id.csv", "--dynamic_csv", "data/dynamic_clean_with_id.csv", "--static_model", "models/gb_static.pkl", "--dynamic_model", "models/gb_dynamic_calibrated.pkl", "--max_events", "300", "--t_alert", "0.90", "--t_review", "0.70", "--suppress_sklearn_pickle_warnings" ]
     volumes:
       - ./:/app
