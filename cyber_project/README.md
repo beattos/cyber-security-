@@ -1,4 +1,4 @@
-# AI-Enhanced Cybersecurity Streaming Pipeline
+# AI-Enhanced Cybersecurity Streaming Pipeline - A Project By Daniel Buts, Daniel Agranat and Daniel Ziv
 ## Static vs Dynamic Malware Detection with Confidence-Gated SOC Decision Policy
 
 A research-grade machine learning pipeline that compares static and dynamic malware detection methods under a confidence-gated security operations center (SOC) decision framework, demonstrating operational tradeoffs between detection accuracy, false positive control, and analyst workload.
