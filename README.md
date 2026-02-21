@@ -25,12 +25,12 @@ The repository is structured as a **progressive learning path**, starting from C
 
 | Lab | Title | Folder | Description |
 |-----|------|--------|-------------|
-| **1** | 🧩 Cyber Threat Intelligence – MITRE ATT&CK Mapping | [lab01-cti-mapping](lab01-cti-mapping/) | CTI report on Microsoft “AI vs AI” phishing campaign |
+| **1** | 🧩 Cyber Threat Intelligence – MITRE ATT&CK Mapping | [lab01-cti-mapping](lab01-cti-mapping/) | CTI report on Microsoft “AI vs AI” phishing campaign & gift card fraud campaign|
 | **2** | 🚨 Network Anomaly Detection (IsolationForest) | [lab02-anomaly-detection](lab02-anomaly-detection/) | CICIDS2017 anomaly detection mapped to ATT&CK T1041 |
 | **3** | 🔍 (Coming soon) | (To be added) | To be added |
 | **4** | 🤖 LLM Agents & Tool Usage | [lab04-exploratory-analysis](lab04-exploratory-analysis/) | Building and interacting with LLM-based agents using tools |
 | **5** | 🔐 LLM Workflow Defense and Query Rewriting | [lab05-llm-defense-workflow](lab05-llm-defense-workflow) | Defensive LLM Workflow (Policy-Based Query Filtering) |
-| **Final Project** | 🧠 Static vs Dynamic Malware Analysis | (To be added) | AI-assisted malware analysis using static and dynamic techniques |
+| **Final Project** | 🧠 Static vs Dynamic Malware Analysis | [cyber_project](cyber_project) | AI-assisted malware analysis using static and dynamic analysis |
 
 
 ---
