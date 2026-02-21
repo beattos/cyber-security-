@@ -38,14 +38,12 @@ The repository is structured as a **progressive learning path**, starting from C
 # 🧠 Final Project – Static vs Dynamic Malware Analysis using AI Agents
 
 ## 🎯 Project Goal
-Design and implement an **AI-assisted malware analysis system** that compares and explains **static** and **dynamic** analysis results using LLM-based agents.
+Design and implement an **AI-powered malware analysis pipeline** that compares and explains **static** and **dynamic** analysis results.
 
 The system assists a SOC analyst by:
 - Parsing raw analysis artifacts
-- Extracting indicators automatically
-- Explaining behavior in clear natural language
 - Highlighting differences between static and runtime behavior
-
+- Classifying examples of benign and malicious executable files
 ---
 
 ## 🔬 Analysis Types
