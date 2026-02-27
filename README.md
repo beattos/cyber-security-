@@ -30,7 +30,7 @@ The repository is structured as a **progressive learning path**, starting from C
 | **3** | 🔍 (Coming soon) | (To be added) | To be added |
 | **4** | 🤖 LLM Agents & Tool Usage | [lab04-exploratory-analysis](lab04-exploratory-analysis/) | Building and interacting with LLM-based agents using tools |
 | **5** | 🔐 LLM Workflow Defense and Query Rewriting | [lab05-llm-defense-workflow](lab05-llm-defense-workflow) | Defensive LLM Workflow (Policy-Based Query Filtering) |
-| **Final Project** | 🧠 Static vs Dynamic Malware Analysis | [cyber_project](cyber_project) | AI-assisted malware analysis using static and dynamic analysis |
+| **Final Project** | 🧠 Static vs Dynamic Malware Analysis | [cyber_project](cyber_project) | AI-assisted malware detection using static and dynamic artifacts |
 
 
 ---
